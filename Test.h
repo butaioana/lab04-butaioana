@@ -1,2 +1,3 @@
-#include"Student.h"
-void teste();
+#pragma once
+#include "Examen.h"
+void tests();

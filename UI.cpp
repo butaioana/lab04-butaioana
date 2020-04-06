@@ -1,104 +1,174 @@
-#include"UI.h"
-#include"Test.h"
-#include"Functionalitati.h"
-#include<iostream>
+#include "UI.h"
+#include "Test.h"
+#include "Functions.h"
+#include <iostream>
+#include <string>
+#include <ctime>
+
 using namespace std;
 
 char* allocate_memory()
 {
-	char* name = new char[0];
-	string string_name;
-	cin >> string_name;
-	name = new char[string_name.size() + 1];
-	strcpy_s(name, 1 + string_name.size(), string_name.c_str());
+    char* name = new char[0];
+    string string_name;
 
-	return name;
+    cin >> string_name;
+    name = new char[string_name.size() + 1];
+    strcpy_s(name, 1 + string_name.size(), string_name.c_str());
+
+    return name;
 }
 
-void UI::add(){
+int macarena() {
 
-	char nume[100];
-	char* date = new char[0];
-	string aux_date;
-	int nota;
-	cout << "Nume: ";
-	cin >> nume;
-	cout << endl;
-	int ok = 1;
-	while (ok == 1)
-	{
-		while (ok == 1) {
-			cout << "Data: ";
-			date = allocate_memory();
-			if (except_date(date))
-				ok = 0;
-			else
-				cout << "Invalid date! ";
-		}
-		cout << endl;
-		cout << "nota: ";
-		do {
-			cin >> nota;
-			if(!(nota >= 1 and nota <= 10))
-				cout << "Nota trebuie sa fie cuprinsa intre 1 si 10: ";
-		} while (!(nota >= 0 and nota <= 10));
-
-		this->service.insert_sevice(nume, date, nota);
-	}
+    return rand() % 5;
 }
-void UI::print()
+
+void UI::add() {
+
+    char* date = new char[0], * name = new char[0];
+    int nota;
+    do {
+        cout << "nume: ";
+        name = allocate_memory();
+
+        int ok = 1;
+        while (ok == 1) {
+            cout << "data: ";
+            date = allocate_memory();
+            if (except_date(date))
+                ok = 0;
+            else
+                cout << "(._.)( ZZ.LL.AAAA )(._.)Data incorecta! ";
+        }
+        cout << "Nota: ";
+        do {
+            cin >> nota;
+            if (!(nota >= 0 and nota <= 10))
+                cout << "(X_X) Nota trebuie sa fie cuprinsa intre 1 si 10: ";
+        } while (!(nota >= 0 and nota <= 10));
+        if (macarena() == 0)
+
+            cout << "STAI ACASA! " << endl;
+
+    } while (macarena() == 0);
+    this->service.insert_service(name, date, nota);
+}
+
+void UI::print() {
+
+    int n = this->service.get_len();
+    Examen* array = this->service.get_all();
+    for (int i = 0; i < n; i++)
+        cout << array[i] << endl;
+}
+
+void UI::all_exams_by_higher_note() {
+
+    double note;
+    cout << "Dati o nota: ";
+    cin >> note;
+    int n;
+    Examen* array = this->service.all_exams_by_higher_note(note,n);
+
+    for (int i = 0; i < n; i++)
+        cout << array[i] << endl;
+}
+
+void UI::bonus() {
+    char* name = new char[0];
+    cout << "nume: ";
+    name = allocate_memory();
+    this->service.bonus(name);
+}
+
+void UI::update_examen() {
+
+    char* date = new char[0], * name = new char[0];
+    int nota;
+
+    cout << " nume: ";
+    name = allocate_memory();
+
+    int ok = 1;
+    while (ok == 1) {
+        cout << "data: ";
+        date = allocate_memory();
+        if (except_date(date))
+            ok = 0;
+        else
+            cout << "(._.)( ZZ.LL.AAAA )(._.)Data incorecta! ";
+    }
+    cout << endl;
+    cout << "Nota: ";
+    do {
+        cin >> nota;
+        if (!(nota >= 1 and nota <= 10))
+            cout << "(X_X) Nota trebuie sa fie cuprinsa intre 1 si 10: ";
+    } while (!(nota >= 0 and nota <= 10));
+    this->service.update_examen(name, date, nota);
+}
+
+void UI::delete_examen()
 {
-	for (int i = 0; i < this->service.get_len(); i++)
-		cout << this->service.get_all()[i] << endl;
-}
-void UI::update_shop() {
-
-	char* date = new char[0], * name = new char[0];
-	int price;
-
-	cout << "Give a name: ";
-	name = allocate_memory();
-
-	int ok = 1;
-	while (ok == 1) {
-		cout << "Give a date: ";
-		date = allocate_memory();
-		if (except_date(date))
-			ok = 0;
-		else
-			cout << "Invalid date! ";
-	}
-
-	cout << "Give a mark: ";
-	cin >> price;
-	cout << endl;
-	this->service.update_shop(name, date, price);
+    cout << "sterge un examen dupa nume: ";
+    char* name = allocate_memory();
+    this->service.delete_examen(name);
 }
 
-void UI::delete_shop()
-{
-	cout << "Give a name for deleting: ";
-	char* name = allocate_memory();
-	this->service.delete_student(name);
-}
 void UI::run() {
-	int op = 1;
-	while (op) 
-	{
-		cout << "Alege o obtiune" << endl;
-		meniu();
-		cout << "Obtiunea ta este" << endl;
-		cin >> op;
-		if (op == 1) {
-			this->add();
-		}
-		if (op == 2) {
-			this->print();
-		}
-		if (op == 3) {
-			this->update_shop();
-		}
-		if (op == 4)
-			this->delete_shop();
-	}
+
+    string opt;
+    bool ok = true;
+    Examen* undo_array = new Examen[0];
+
+    do {
+        cout << "(^_^) " << endl;
+        cout << "Alege o obtiune" << endl;
+        menu();
+        cout << "Obtiunea ta este" << endl;
+        cin >> opt;
+
+        if (opt.size() == 1)
+        {
+            if (opt[0] == '1') {
+                this->add();
+            }
+            else
+                if (opt[0] == '2') {
+                    this->print();
+                }
+                else
+                    if (opt[0] == '3') {
+                        this->update_examen();
+                    }
+                    else
+                        if (opt[0] == '4') {
+                            this->delete_examen();
+                        }
+                        else
+                            if (opt[0] == '5')
+                            {
+                                this->service.undo_examen();
+                            }
+                            else
+                                if (opt[0] == '6')
+                                {
+                                    this->all_exams_by_higher_note();
+                                }
+                                else
+                                    if (opt[0] == '7')
+                                    {
+                                        this->bonus();
+                                    }
+                                    else
+                                        if (opt[0] == 'x') {
+                                            ok = false;
+                                        }
+                                        else
+                                            cout << endl << "(X_X)" << endl;
+        }
+        else
+            cout << endl << "(X_X)" << endl;
+    } while (ok);
 }
